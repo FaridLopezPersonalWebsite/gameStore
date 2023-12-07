@@ -36,8 +36,7 @@ async function createVideoGame(body) {
         } = await client.query(`
             INSERT INTO videoGames (name, description, price, "inStock", "isPopular", "imgUrl")
             VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *;
-        `, [name, description, price, inStock, isPopular, imgUrl]);
+            RETURNING *;`, [name, description, price, inStock, isPopular, imgUrl]);
 
         return videoGame;
     } catch (error) {
@@ -52,7 +51,19 @@ async function updateVideoGame(id, fields = {}) {
 
 // DELETE - /api/video-games/:id - delete a single video game by id
 async function deleteVideoGame(id) {
-    // LOGIC GOES HERE
+    try {
+        const { rows: [videoGame] } = await client.query(
+            `
+            DELETE FROM videoGames
+            WHERE id=$1
+            RETURNING *;
+        `, 
+        [id]
+        );
+        return videoGame;
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {
